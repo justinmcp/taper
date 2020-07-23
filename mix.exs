@@ -20,7 +20,7 @@ defmodule Taper.MixProject do
 
   defp package() do
     [
-      files: ~w(lib assets/js priv .formatter.exs mix.exs README* LICENSE* CHANGELOG* src),
+      files: ~w(lib priv .formatter.exs mix.exs README* LICENSE* CHANGELOG*),
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/justinmcp/taper"}
     ]
@@ -45,6 +45,7 @@ defmodule Taper.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:redix, "~> 0.11.1", optional: true}
     ]
   end

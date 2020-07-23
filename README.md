@@ -1,9 +1,6 @@
 # Taper
 
-[![License]()]
-[![Hex.pm]()]
-[![Build Status]()]  
-[![Coverage]()]
+![License](https://img.shields.io/hexpm/l/taper) ![Hex.pm](https://img.shields.io/hexpm/v/taper) [![Build Status]()] [![Coverage]()]
 
 Taper is a React (with SSR) and server-side-redux-like environment for
 Elixir+Phoenix.
