@@ -113,7 +113,7 @@ window.taper.render(<App />, rootComponent);
 
 ## Examples
 
-Some examples can be found @ []
+Some examples can be found @ [taper-examples](https://github.com/justinmcp/taper-examples)
 
 ## License
 
