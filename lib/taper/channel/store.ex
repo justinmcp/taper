@@ -18,4 +18,13 @@ defmodule Taper.Channel.Store do
     broadcast(socket, "update", store)
     {:noreply, socket}
   end
+
+  def terminate(_reason, %{topic: "taper:store:connect"} = socket) do
+    socket
+  end
+
+  def terminate(_reason, %{topic: "taper:store:" <> session_id} = socket) do
+    Taper.Store.Depo.disconnect(session_id)
+    socket
+  end
 end
