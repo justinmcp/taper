@@ -32,6 +32,7 @@ defmodule Taper.Store.Monitor do
     do_reply([{session_id, DateTime.utc_now()} | state])
   end
 
+  @impl true
   def handle_cast({:cancel, session_id}, state) do
     state
     |> Enum.reject(fn {sid, _} -> sid == session_id end)

@@ -10,6 +10,7 @@ class Taper {
     this.remoteCallChannelConnected = false;
     this.remoteCallId = 0;
     this.activeRemoteCalls = {};
+    this.component = null;
 
     this.dispatch = this.dispatch.bind(this);
     this.remoteCall = this.remoteCall.bind(this);
@@ -37,12 +38,6 @@ class Taper {
           }
         });
       });
-
-    // this.remoteCallChannel = this.socket.channel("taper:remote_call", {});
-    // this.remoteCallChannel.on("update", this.handleRemoteCall);
-    // this.remoteCallChannel.join().receive("ok", (msg) => {
-    //   this.remoteCallChannelConnected = true;
-    // });
   }
 
   dispatch(action) {
@@ -175,35 +170,4 @@ function connect(mapStateToProps, mapDispatchToProps) {
   };
 }
 
-function useRemoteCall(call_info) {
-  if (!window.taper) {
-    return { loading: false, error: false, data: null };
-  }
-
-  const [data, setData] = taper.React.useState(call_info);
-  const [loading, setLoading] = taper.React.useState(true);
-  const [connected, setConnected] = taper.React.useState(
-    window.taper.remoteCallChannelConnected
-  );
-  const error = null;
-
-  useEffect(() => {
-    if (!connected) {
-      let timeoutID = setTimeout(() => {
-        setConnected(true);
-      }, 1000);
-      return () => {
-        clearTimeout(timeoutID);
-      };
-    }
-
-    window.taper.remoteCall(call_info, (response) => {
-      setData(response);
-      setLoading(false);
-    });
-  }, [loading, connected]);
-
-  return { loading, error, data };
-}
-
-export { Taper, connect, useRemoteCall };
+export { Taper, connect };

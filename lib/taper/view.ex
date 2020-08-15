@@ -12,10 +12,6 @@ defmodule Taper.View do
     tag(:meta, name: "taper-token", content: token, charset: "utf-8")
   end
 
-  def taper_render(module, template, assigns, opts \\ []) do
-    content_tag(:div, module.render(template, assigns), Keyword.put_new(opts, :id, "taper"))
-  end
-
   def taper_script() do
     content_tag(:script, "", type: "text/javascript", src: "/js/app.js")
   end

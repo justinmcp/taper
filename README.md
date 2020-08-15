@@ -100,7 +100,8 @@ window.taper.render(<App />, rootComponent);
 ## TODO
 
 - [ ] SSR with active store state (not initial store state)
-- [ ] Server side routing (with code splitting)
+- [-] Server side routing (with code splitting)
+- [x] Server side rendering with no hydration
 - [ ] Setup mix task
 - [ ] Flip store ownership to make semi/persistent stores easier
 - [ ] Handle errors in JSX templates

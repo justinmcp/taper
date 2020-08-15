@@ -9,7 +9,7 @@ const HEADER_LENGTH = 4;
 
 async function compileJsxFile(jsxFile, store) {
   const ctx = vm.createContext({
-    window: { taper: { store: store, React }, taperCompile: true },
+    window: { taper: { store, React }, taperCompile: true },
     exports: {},
     console: console,
   });
@@ -65,67 +65,25 @@ async function compileJsxFile(jsxFile, store) {
           .readFileSync("/bundle.js")
           .toString();
         vm.runInContext(bundle, ctx);
-        resolve(reactDomServer.renderToString(ctx.exports.default));
+        resolve(
+          `<div id="<%= @conn.private.taper[:taper_id] || @conn.assigns[:taper_id] || "taper" %>">${reactDomServer.renderToString(
+            ctx.exports.default
+          )}</div>
+          <%= if !(@conn.private.taper[:server_only] || @conn.assigns[:server_only]) do %>
+          <script>
+            exports = {}
+            ${bundle}
+            window.taperComponent = exports.default
+          </script>
+          <% end %>
+          `
+        );
       }
     });
   });
 }
 
-function compileJsx(jsxCode) {
-  return undefined;
-}
-
-// function compileJsx(jsxCode, context) {
-//   console.error(`NODE_PATH=${process.env["NODE_PATH"]}`);
-//   console.error(`CWD=${process.cwd()}`);
-//   console.error(`preset-react = ${require("@babel/preset-react")}`);
-//   // Transform jsx, et al.
-
-//   // const { code: transformedCode } = require("@babel/core").transform(jsxCode, {
-//   //   presets: [require("@babel/preset-react")],
-//   //   plugins: [
-//   //     require("@babel/plugin-transform-modules-commonjs"),
-//   //     require("@babel/plugin-transform-react-jsx"),
-//   //   ],
-//   // });
-
-//   const { code: transformedCode } = require("@babel/core").transform(jsxCode, {
-//     presets: [require("@babel/preset-react")],
-//     plugins: [require("@babel/plugin-transform-modules-commonjs")],
-//   });
-
-//   // const { code: transformedCode } = vm.runInContext(
-//   //   // `
-//   //   //   require('@babel/core').transform(
-//   //   //     "${jsxCode}",
-//   //   //     { plugins: ['@babel/plugin-transform-modules-commonjs', '@babel/plugin-transform-react-jsx'] }
-//   //   //   );
-//   //   // `,
-//   //   `
-//   //     require('@babel/core').transform(
-//   //       '${code}',
-//   //       { plugins: [require('@babel/plugin-transform-modules-commonjs'), require('@babel/plugin-transform-react-jsx')] }
-//   //     );
-//   //   `,
-//   //   context
-//   // );
-//   console.error(`transformedCode=${transformedCode}`);
-
-//   // Build component
-//   // const component = vm.runInContext(transformedCode, context);
-//   const component = eval(transformedCode);
-
-//   return require("react-dom/server").renderToString(component);
-//   // SSR
-//   // return vm.runInContext(
-//   //   `require('react-dom/server').renderToString(${component})`,
-//   //   context
-//   // );
-// }
-
 function server(input, output) {
-  const context = vm.createContext({ require: require, console: console });
-
   var state = "start";
   var length = 0;
   var buffer = Buffer.alloc(0);
@@ -140,16 +98,10 @@ function server(input, output) {
     output.write(resultBuffer);
   };
 
-  handleCommand = async ({ type, code, path, store }) => {
+  handleCommand = async ({ type, path, store }) => {
     var result = undefined;
 
     switch (type) {
-      case "eval":
-        result = vm.runInContext(code, context);
-
-      case "compile_jsx":
-        result = compileJsx(code);
-
       case "compile_jsx_file":
         result = await compileJsxFile(path, store).catch((err) => {
           console.error("ERROR FROM compile", err);
