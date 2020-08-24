@@ -32,6 +32,12 @@ defmodule AwesomeWeb
       import Taper.View
     end
   end
+
+  def router do
+    quote do
+    ...
+      import Taper.Router
+    end
 end
 ```
 
@@ -40,6 +46,19 @@ defmodule AwesomeWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :awesome
   ...
   socket "/taper", Taper.Socket, websocket: true
+end
+```
+
+```elixir
+defmodule AwesomeWeb.Router do
+  scope "/", AwesomeWeb do
+    pipe_through :browser
+     # Possible options;
+     # - server_only: (true|false); when true will not hydrate on client - renders static page
+     # - taper_id: (String); when set will id of taper root component on page
+     # Both options can also be set via assigns in the controller
+    taper "/", AwesomePage
+  end
 end
 ```
 
@@ -53,7 +72,7 @@ config :phoenix, :template_engines, jsx: Taper.Template.Engine
 </head>
 <body>
   <main role="main">
-    <%= taper_render(@view_module, @view_template, assigns, class: "myclass") %>
+    <%= @inner_content %>
   </main>
   <%= taper_script() %>
 </body>
@@ -84,23 +103,25 @@ import { Taper } from "taper";
 import App from "./components/App";
 import css from "../css/app.scss";
 
-let taperToken = document
-  .querySelector("meta[name='taper-token']")
-  .getAttribute("content");
-let rootComponent = document.getElementById("taper");
-window.taper = new Taper(
-  "/taper",
-  { Socket, React, ReactDOM },
-  { params: { taperToken } }
-);
-window.taper.connect();
-window.taper.render(<App />, rootComponent);
+if (window.taperComponent != undefined) {
+  let taperToken = document
+    .querySelector("meta[name='taper-token']")
+    .getAttribute("content");
+  let rootComponent = document.getElementById("taper");
+  window.taper = new Taper(
+    "/taper",
+    { Socket, React, ReactDOM },
+    { params: { taperToken } }
+  );
+  window.taper.connect();
+  window.taper.render(window.taperComponent, rootComponent);
+}
 ```
 
 ## TODO
 
 - [ ] SSR with active store state (not initial store state)
-- [-] Server side routing (with code splitting)
+- [o] Server side routing (with code splitting)
 - [x] Server side rendering with no hydration
 - [ ] Setup mix task
 - [ ] Flip store ownership to make semi/persistent stores easier
